@@ -13,4 +13,5 @@ model.compile(loss=losses.binary_crossentropy,
                 optimizer=optimizers.Adam(lr=0.001), 
                 metrics=['accuracy'])
 print(model.summary())
-plot_model(model, to_file='model.png', show_shapes=True, show_layer_names=True)  
+# plot_model(model, to_file='model.png', show_shapes=True, show_layer_names=True)  
+

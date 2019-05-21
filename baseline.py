@@ -22,36 +22,43 @@ def baseline():
 
     # Conv layers begin
 
+    p = p_input
+    g = g_input
+
     vgg_model = applications.VGG16(include_top=True, weights='imagenet')
+
     # Disassemble layers
     ls = [l for l in vgg_model.layers]
-    print(ls)
-    1/0
+
+    for i in range(1,7):
+        ls[i].trainable = False
+        p = ls[i](p)
+        g = ls[i](g)
 
     # Conv 1-3
 
-    block1 = [
-        layers.Conv2D(64, kernel_size=(3,3), padding='same', activation='relu'),
-        layers.Conv2D(64, kernel_size=(3,3), padding='same', activation='relu'),
-        layers.MaxPooling2D((2,2), strides=(2,2)),
-    ]
-    block2 = [
-        layers.Conv2D(128, kernel_size=(3,3), padding='same', activation='relu'),
-        layers.Conv2D(128, kernel_size=(3,3), padding='same', activation='relu'),
-        layers.MaxPooling2D((2,2), strides=(2,2)),
-    ]
+    # block1 = [
+    #     layers.Conv2D(64, kernel_size=(3,3), padding='same', activation='relu'),
+    #     layers.Conv2D(64, kernel_size=(3,3), padding='same', activation='relu'),
+    #     layers.MaxPooling2D((2,2), strides=(2,2)),
+    # ]
+    # block2 = [
+    #     layers.Conv2D(128, kernel_size=(3,3), padding='same', activation='relu'),
+    #     layers.Conv2D(128, kernel_size=(3,3), padding='same', activation='relu'),
+    #     layers.MaxPooling2D((2,2), strides=(2,2)),
+    # ]
     block3 = [
         layers.Conv2D(256, kernel_size=(3,3), padding='same', activation='relu'),
         layers.Conv2D(256, kernel_size=(3,3), padding='same', activation='relu'),
         layers.MaxPooling2D((2,2), strides=(2,2)),
     ]
-    BlueUnit1 = tf.keras.Sequential(block1)
-    BlueUnit2 = tf.keras.Sequential(block2)
+    # BlueUnit1 = tf.keras.Sequential(block1)
+    # BlueUnit2 = tf.keras.Sequential(block2)
     BlueUnit3 = tf.keras.Sequential(block3)
 
-    p,g = BlueUnit1(p_input),BlueUnit1(g_input)
-    # import pdb; pdb.set_trace()
-    p,g = BlueUnit2(p),BlueUnit2(g)
+    # p,g = BlueUnit1(p_input),BlueUnit1(g_input)
+    # # import pdb; pdb.set_trace()
+    # p,g = BlueUnit2(p),BlueUnit2(g)
     p,g = BlueUnit3(p),BlueUnit3(g)
 
     # Conv4
