@@ -1,4 +1,4 @@
-from tensorflow.keras import models, layers, activations, losses, optimizers
+from tensorflow.keras import models, layers, activations, losses, optimizers, applications
 import tensorflow.keras.backend as K
 import tensorflow as tf
 
@@ -21,6 +21,13 @@ def baseline():
     # p_input, g_input = reshape(p_input), reshape(g_input)
 
     # Conv layers begin
+
+    vgg_model = applications.VGG16(include_top=True, weights='imagenet')
+    # Disassemble layers
+    ls = [l for l in vgg_model.layers]
+    print(ls)
+    1/0
+
     # Conv 1-3
 
     block1 = [
