@@ -4,6 +4,10 @@ import tensorflow as tf
 import random
 import pathlib
 
+tf.enable_eager_execution()
+AUTOTUNE = tf.data.experimental.AUTOTUNE
+
+
 def preprocess_image(image):
   image = tf.image.decode_jpeg(image, channels=3)
   image = tf.image.resize_images(image, [256, 256])
@@ -14,46 +18,99 @@ def load_and_preprocess_image(path):
   image = tf.read_file(path)
   return preprocess_image(image)
 
-lib = {}
-data_root = pathlib.Path('../min_data/MVB_0505') # CHANGE min_data to data for full dataset
-train_path = data_root / 'train'
-for bag in train_path.iterdir():
-    id = str(bag.stem)
-    if '.DS_Store' in id: continue
-    lib[id] = {}
-    for dir in bag.iterdir():
-        result = list(dir.glob('*.jpg'))
-        result = [load_and_preprocess_image(str(img)) for img in result]
-        if str(dir.stem)[0] == 'b':
-            lib[id]['gallery'] = result
-        if str(dir.stem)[0] == 'f':
-            lib[id]['probe'] = result
-# print(lib)
+def MVBDataset(path='../min_data/MVB_0505', preview=False, 
+                shuffle=True, prefetch=True, batch_size=128):
+  lib = {}
+  data_root = pathlib.Path(path) # CHANGE min_data to data for full dataset
+  train_path = data_root / 'train'
+  for bag in train_path.iterdir():
+      id = str(bag.stem)
+      if '.DS_Store' in id: continue
+      lib[id] = {}
+      for dir in bag.iterdir():
+          result = list(dir.glob('*.jpg'))
+          result = [load_and_preprocess_image(str(img)) for img in result]
+          if str(dir.stem)[0] == 'b':
+              lib[id]['gallery'] = result
+          if str(dir.stem)[0] == 'f':
+              lib[id]['probe'] = result
+  # print(lib)
 
-pos = []
-# generating positive pairs
-for img,val_dict in lib.items():
-    ps = val_dict['probe']
-    gs = val_dict['gallery']
-    for p in ps:
-        for g in gs:
-            pos.append((ps,gs)) # CHECK: tuple or list?
-print('pos pair num:', len(pos))
-# ENSURE a balanced pos and neg pair ratio for training
-neg_sample_num = len(pos) // len(lib.keys())
-neg = []
+  # generating positive pairs
+  pos = []
 
-def get_random_not(lib,img):
-    k,v = random.choice(list(lib.items()))
-    if k == img: get_random_not(lib,img)
-    return v
+  for img,val_dict in lib.items():
+      ps = val_dict['probe']
+      gs = val_dict['gallery']
+      for p in ps:
+          for g in gs:
+              pos.append((p,g)) # CHECK: tuple or list?
+  print('pos pair num:', len(pos))
 
-# generating negative pairs
-for img,val_dict in lib.items():
-    ps =  val_dict['probe']
-    for i in range(neg_sample_num):
-        rand_neg_gs = get_random_not(lib,img)['gallery']
-        neg.append((random.choice(ps),random.choice(gs)))
+  # generating negative pairs
 
-print('neg pair num:', len(neg))
-# print(neg)
+  # ENSURE a balanced pos and neg pair ratio for training
+  neg_sample_num = len(pos) // len(lib.keys())
+  neg = []
+
+  def get_random_not(lib,img):
+      k,v = random.choice(list(lib.items()))
+      if k == img: get_random_not(lib,img)
+      return v
+
+  for img,val_dict in lib.items():
+      ps =  val_dict['probe']
+      for i in range(neg_sample_num):
+          rand_neg_gs = get_random_not(lib,img)['gallery']
+          neg.append((random.choice(ps),random.choice(gs)))
+
+  print('neg pair num:', len(neg))
+
+  # building tf dataset
+  pos_labels = np.ones(len(pos))
+  neg_labels = np.zeros(len(neg))
+  labels = np.concatenate([pos_labels,neg_labels])
+  label_ds = tf.data.Dataset.from_tensor_slices(tf.cast(labels, tf.int64))
+  for label in label_ds.take(10):
+    print(label.numpy())
+
+  imgs = pos + neg
+  img_count = len(imgs)
+  img_ds = tf.data.Dataset.from_tensor_slices(imgs)
+  print('shape: ', repr(img_ds.output_shapes))
+  print('type: ', img_ds.output_types)
+  print()
+  print(img_ds)
+
+  # zipping the labels and images
+  image_label_ds = tf.data.Dataset.zip((img_ds, label_ds))
+  print('image shape: ', image_label_ds.output_shapes[0])
+  print('label shape: ', image_label_ds.output_shapes[1])
+  print('types: ', image_label_ds.output_types)
+  print()
+  print(image_label_ds)
+
+  # visual examinations
+  if preview: 
+    plt.figure(figsize=(8,8))
+    for n,((a,b),m) in enumerate(image_label_ds.shuffle(200).take(4)):
+      plt.subplot(4,2,2*n+1)
+      plt.imshow(a)
+      plt.subplot(4,2,2*n+2)
+      plt.imshow(b)
+      plt.grid(False)
+      plt.xticks([])
+      plt.yticks([])
+      plt.xlabel(str(m.numpy()))
+    plt.show()
+  
+  if shuffle:
+    # can reduce buffer_size if memory runs out
+    ds = image_label_ds.shuffle(buffer_size=img_count)
+  ds = ds.repeat()
+  ds = ds.batch(batch_size)
+  # let the dataset fetch batches in the background while the model is training.
+  if prefetch:
+    ds = ds.prefetch(buffer_size=AUTOTUNE)
+
+  return ds

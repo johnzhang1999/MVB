@@ -116,5 +116,3 @@ def baseline():
     model = models.Model([p_input,g_input],output)
 
     return model
-
-
