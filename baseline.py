@@ -4,7 +4,7 @@ import tensorflow as tf
 
 def baseline():
     # Model configs
-    DIMEN = 128 
+    DIMEN = 256 
     kernel_size_1 = (3,3)
     pool_size_1 = (2,2)
     strides = 1
@@ -12,7 +12,7 @@ def baseline():
     # input_shape = ((DIMEN**2) * 3,)
     # convolution_shape = (DIMEN,DIMEN,3)
 
-    input_shape = (128,128,3)
+    input_shape = (DIMEN,DIMEN,3)
 
     p_input = layers.Input(shape=input_shape)
     g_input = layers.Input(shape=input_shape)
@@ -112,7 +112,7 @@ def baseline():
     x = layers.Dense(16, activation='sigmoid')(sub)
     output = layers.Dense(1, activation='sigmoid')(x)
 
-    # Model Compilation
+    # Model
     model = models.Model([p_input,g_input],output)
 
     return model
