@@ -18,18 +18,20 @@ def load_and_preprocess_image(path):
   image = tf.read_file(path)
   return preprocess_image(image)
 
-def MVBDataset(path='../min_data/MVB_0505', preview=False, 
+def MVBDataset(path='../data/MVB_0505', mode='train', preview=False, 
                 shuffle=True, prefetch=True, batch_size=128):
   lib = {}
   data_root = pathlib.Path(path) # CHANGE min_data to data for full dataset
-  train_path = data_root / 'train'
+  if mode == 'test':
+    mode = 'test_500'
+  train_path = data_root / mode
   for bag in train_path.iterdir():
       id = str(bag.stem)
       if '.DS_Store' in id: continue
       lib[id] = {}
       for dir in bag.iterdir():
           result = list(dir.glob('*.jpg'))
-          result = [load_and_preprocess_image(str(img)) for img in result]
+          result = [str(img) for img in result]
           if str(dir.stem)[0] == 'b':
               lib[id]['gallery'] = result
           if str(dir.stem)[0] == 'f':
@@ -66,6 +68,7 @@ def MVBDataset(path='../min_data/MVB_0505', preview=False,
 
   print('neg pair num:', len(neg))
 
+  
   # building tf dataset
   pos_labels = np.ones(len(pos))
   neg_labels = np.zeros(len(neg))
@@ -75,13 +78,15 @@ def MVBDataset(path='../min_data/MVB_0505', preview=False,
     print(label.numpy())
 
   imgs = pos + neg
+  # print(imgs[0][0])
   img_count = len(imgs)
   img_ds = tf.data.Dataset.from_tensor_slices(imgs)
+  img_ds = img_ds.map(lambda img:(load_and_preprocess_image(img[0]),load_and_preprocess_image(img[1])))
   print('shape: ', repr(img_ds.output_shapes))
   print('type: ', img_ds.output_types)
   print()
   print(img_ds)
-
+  
   # zipping the labels and images
   image_label_ds = tf.data.Dataset.zip((img_ds, label_ds))
   print('image shape: ', image_label_ds.output_shapes[0])
