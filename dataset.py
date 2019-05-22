@@ -14,12 +14,13 @@ def preprocess_image(image):
   image /= 255.0  # normalize to [0,1] range
   return image
 
-def load_and_preprocess_image(path):
-  image = tf.read_file(path)
-  return preprocess_image(image)
+def load_and_preprocess_image(paths):
+  a = tf.read_file(paths[0])
+  b = tf.read_file(paths[1])
+  return preprocess_image(a),preprocess_image(b)
 
 def MVBDataset(path='../data/MVB_0505', mode='train', preview=False, 
-                shuffle=True, prefetch=True, batch_size=128):
+                shuffle=True, prefetch=True, batch_size=32):
   lib = {}
   data_root = pathlib.Path(path) # CHANGE min_data to data for full dataset
   if mode == 'test':
@@ -74,6 +75,7 @@ def MVBDataset(path='../data/MVB_0505', mode='train', preview=False,
   neg_labels = np.zeros(len(neg))
   labels = np.concatenate([pos_labels,neg_labels])
   label_ds = tf.data.Dataset.from_tensor_slices(tf.cast(labels, tf.int64))
+  # label_ds = tf.data.Dataset.from_tensor_slices(labels)
   for label in label_ds.take(10):
     print(label.numpy())
 
@@ -81,7 +83,7 @@ def MVBDataset(path='../data/MVB_0505', mode='train', preview=False,
   # print(imgs[0][0])
   img_count = len(imgs)
   img_ds = tf.data.Dataset.from_tensor_slices(imgs)
-  img_ds = img_ds.map(lambda img:(load_and_preprocess_image(img[0]),load_and_preprocess_image(img[1])))
+  img_ds = img_ds.map(load_and_preprocess_image, num_parallel_calls=AUTOTUNE)
   print('shape: ', repr(img_ds.output_shapes))
   print('type: ', img_ds.output_types)
   print()
@@ -112,7 +114,7 @@ def MVBDataset(path='../data/MVB_0505', mode='train', preview=False,
   ds = image_label_ds
   if shuffle:
     # can reduce buffer_size if memory runs out
-    ds = image_label_ds.shuffle(buffer_size=img_count)
+    ds = image_label_ds.shuffle(buffer_size=round(img_count/1.5))
   ds = ds.repeat()
   ds = ds.batch(batch_size)
   # let the dataset fetch batches in the background while the model is training.
