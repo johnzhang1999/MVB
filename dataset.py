@@ -111,13 +111,14 @@ def MVBDataset(path='../data/MVB_0505', mode='train', preview=False,
       plt.xlabel(str(m.numpy()))
     plt.show()
   
-  ds = image_label_ds
-  if shuffle:
-    # can reduce buffer_size if memory runs out
-    ds = image_label_ds.shuffle(buffer_size=round(img_count/1.5))
-  ds = ds.repeat()
+  ds = image_label_ds.cache(filename='./cache.tf-data')
+  ds = ds.apply(
+    tf.data.experimental.shuffle_and_repeat(buffer_size=round(img_count/1.5)))
+  # if shuffle:
+  #   # can reduce buffer_size if memory runs out
+  #   ds = image_label_ds.shuffle(buffer_size=round(img_count/1.5))
+  # ds = ds.repeat()
   ds = ds.batch(batch_size)
-  # let the dataset fetch batches in the background while the model is training.
   if prefetch:
     ds = ds.prefetch(buffer_size=AUTOTUNE)
 
