@@ -121,9 +121,12 @@ def baseline():
     # Element-wise subtraction
     sub = layers.Subtract()([p,g])
 
+    # Flatten
+    x = layers.Flatten()(sub)
+
     # Dense layers
-    x = layers.Dense(64, activation='sigmoid')(sub)
-    x = layers.Dense(16, activation='sigmoid')(sub)
+    x = layers.Dense(64, activation='sigmoid')(x)
+    x = layers.Dense(16, activation='sigmoid')(x)
     output = layers.Dense(1, activation='sigmoid')(x)
 
     # Model

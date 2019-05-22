@@ -109,6 +109,7 @@ def MVBDataset(path='../data/MVB_0505', mode='train', preview=False,
       plt.xlabel(str(m.numpy()))
     plt.show()
   
+  ds = image_label_ds
   if shuffle:
     # can reduce buffer_size if memory runs out
     ds = image_label_ds.shuffle(buffer_size=img_count)
@@ -118,4 +119,4 @@ def MVBDataset(path='../data/MVB_0505', mode='train', preview=False,
   if prefetch:
     ds = ds.prefetch(buffer_size=AUTOTUNE)
 
-  return ds
+  return ds,img_count
