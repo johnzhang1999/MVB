@@ -103,6 +103,9 @@ def MVBDataset(path='../data/MVB_0505', mode='train', preview=False,
     for n,((a,b),m) in enumerate(image_label_ds.shuffle(200).take(4)):
       plt.subplot(4,2,2*n+1)
       plt.imshow(a)
+      plt.grid(False)
+      plt.xticks([])
+      plt.yticks([])
       plt.subplot(4,2,2*n+2)
       plt.imshow(b)
       plt.grid(False)
