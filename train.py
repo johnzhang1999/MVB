@@ -2,7 +2,8 @@ from tensorflow.keras import losses, optimizers
 from tensorflow.keras.utils import plot_model
 from tensorflow.keras.utils import multi_gpu_model
 from baseline import baseline
-from dataset import MVBDataset
+from dataset import Dataset
+from generator import Generator
 import tensorflow as tf
 import time
 
@@ -11,13 +12,26 @@ VAL_SIZE = 100
 
 # dataset
 
-dataset_train,num_train = MVBDataset(mode='train', preview=False, shuffle=True, batch_size=BATCH_SIZE)
-dataset_val = dataset_train.take(VAL_SIZE)
-dataset_train = dataset_train.skip(VAL_SIZE)
-num_train -= VAL_SIZE
-dataset_test,num_test = MVBDataset(mode='test', preview=False, shuffle=True, batch_size=BATCH_SIZE)
-print('SIZES:',num_train,VAL_SIZE,num_test)
+# dataset_train,num_train = MVBDataset(mode='train', preview=True, shuffle=True, batch_size=BATCH_SIZE)
+generator = Generator()
+# print 2 outputs from our generator just to see that it works:
+iter = generator.get_next()
+for i in range(2):
+    print(next(iter))
+ds = Dataset(generator)
+model_input = ds.next_element
+print(model_input)
+# model = Model(model_input)
 
+
+
+
+# dataset_val = dataset_train.take(VAL_SIZE)
+# dataset_train = dataset_train.skip(VAL_SIZE)
+# num_train -= VAL_SIZE
+# dataset_test,num_test = MVBDataset(mode='test', preview=True, shuffle=True, batch_size=BATCH_SIZE)
+# print('SIZES:',num_train,VAL_SIZE,num_test)
+1/0
 # min dataset
 # num_train = 3000
 # dataset_train = dataset_train.take(num_train)
