@@ -8,23 +8,15 @@ def baseline():
     kernel_size_1 = (3,3)
     pool_size_1 = (2,2)
     strides = 1
-
-    # input_shape = ((DIMEN**2) * 3,)
-    # convolution_shape = (DIMEN,DIMEN,3)
-
     input_shape = (DIMEN,DIMEN,3)
 
-    p_input = layers.Input(shape=input_shape)
-    g_input = layers.Input(shape=input_shape)
-
-    # reshape = layers.Reshape(input_shape=input_shape , target_shape=convolution_shape)
-    # p_input, g_input = reshape(p_input), reshape(g_input)
+    # Input layers
+    p = layers.Input(shape=input_shape)
+    g = layers.Input(shape=input_shape)
 
     # Conv layers begin
 
-    p = p_input
-    g = g_input
-
+    # Load pretrained weights
     vgg_model = applications.VGG16(include_top=True, weights='imagenet')
 
     # Disassemble layers
@@ -57,7 +49,6 @@ def baseline():
     BlueUnit3 = tf.keras.Sequential(block3)
 
     # p,g = BlueUnit1(p_input),BlueUnit1(g_input)
-    # # import pdb; pdb.set_trace()
     # p,g = BlueUnit2(p),BlueUnit2(g)
     p,g = BlueUnit3(p),BlueUnit3(g)
 

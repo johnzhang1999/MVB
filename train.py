@@ -59,12 +59,10 @@ callbacks = [
   tf.keras.callbacks.EarlyStopping(patience=2, monitor='val_loss'),
   # Write TensorBoard logs to `./logs` directory
   tf.keras.callbacks.TensorBoard(log_dir='/output', histogram_freq=0, 
-                                  batch_size=BATCH_SIZE, write_graph=True, 
-                                  write_grads=False, write_images=False, 
-                                  embeddings_freq=0, embeddings_layer_names=None, 
-                                  embeddings_metadata=None, embeddings_data=None, 
-                                  update_freq='batch'),
-   tf.keras.callbacks.ModelCheckpoint(filepath, monitor='val_acc', verbose=1, save_best_only=False, mode='auto', period=1)
+                                  embeddings_freq=0, update_freq='batch'),
+   tf.keras.callbacks.ModelCheckpoint(filepath, monitor='val_acc', 
+                                        verbose=1, save_best_only=False, 
+                                        mode='auto', period=1)
 ]
 
 model.fit(dataset_train, epochs=5, steps_per_epoch=num_train//BATCH_SIZE, callbacks=callbacks, 
