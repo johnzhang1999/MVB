@@ -117,7 +117,7 @@ def MVBDataset(path='../data/MVB_0505', mode='train', preview=False,
   # ds = image_label_ds.cache()
   ds = image_label_ds
   ds = ds.apply(
-    tf.data.experimental.shuffle_and_repeat(buffer_size=round(img_count/4)))
+    tf.data.experimental.shuffle_and_repeat(buffer_size=round(img_count//1.7)))
   # if shuffle:
   #   # can reduce buffer_size if memory runs out
   #   ds = image_label_ds.shuffle(buffer_size=round(img_count/1.5))

@@ -6,7 +6,7 @@ from dataset import MVBDataset
 import tensorflow as tf
 import time
 
-BATCH_SIZE = 32
+BATCH_SIZE = 16
 VAL_SIZE = 100
 
 # dataset
@@ -19,11 +19,11 @@ dataset_test,num_test = MVBDataset(mode='test', preview=False, shuffle=True, bat
 print('SIZES:',num_train,VAL_SIZE,num_test)
 
 # min dataset
-num_train = 3000
-dataset_train = dataset_train.take(num_train)
-dataset_val = dataset_train.skip(num_train).take(VAL_SIZE)
-num_test = 300
-dataset_test = dataset_train.skip(num_train).skip(VAL_SIZE).take(num_test)
+# num_train = 3000
+# dataset_train = dataset_train.take(num_train)
+# dataset_val = dataset_train.skip(num_train).take(VAL_SIZE)
+# num_test = 300
+# dataset_test = dataset_train.skip(num_train).skip(VAL_SIZE).take(num_test)
 
 steps_per_epoch = num_train//BATCH_SIZE
 
@@ -69,12 +69,12 @@ callbacks = [
   # Write TensorBoard logs to `./logs` directory
   tf.keras.callbacks.TensorBoard(log_dir='/output', histogram_freq=0, 
                                   embeddings_freq=0, update_freq='batch'),
-   tf.keras.callbacks.ModelCheckpoint(filepath, monitor='val_acc', 
-                                        verbose=1, save_best_only=False, 
-                                        mode='auto', period=1)
+  # tf.keras.callbacks.ModelCheckpoint(filepath, monitor='val_acc', 
+  #                                       verbose=1, save_best_only=False, 
+  #                                       mode='auto', period=1)
 ]
 
-model.fit(dataset_train, epochs=5, steps_per_epoch=num_train//BATCH_SIZE, callbacks=callbacks, 
+model.fit(dataset_train, epochs=1, steps_per_epoch=num_train//BATCH_SIZE, callbacks=callbacks,
             validation_data=dataset_val, validation_steps=VAL_SIZE//BATCH_SIZE)
  
 # EVALUATION
