@@ -114,7 +114,8 @@ def MVBDataset(path='../data/MVB_0505', mode='train', preview=False,
       plt.xlabel(str(m.numpy()))
     plt.show()
   
-  ds = image_label_ds.cache(filename='./cache.tf-data')
+  # ds = image_label_ds.cache()
+  ds = image_label_ds
   ds = ds.apply(
     tf.data.experimental.shuffle_and_repeat(buffer_size=round(img_count/4)))
   # if shuffle:

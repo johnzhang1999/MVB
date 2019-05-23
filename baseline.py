@@ -11,11 +11,12 @@ def baseline():
     input_shape = (DIMEN,DIMEN,3)
 
     # Input layers
-    p = layers.Input(shape=input_shape)
-    g = layers.Input(shape=input_shape)
+    p_input = layers.Input(shape=input_shape)
+    g_input = layers.Input(shape=input_shape)
 
     # Conv layers begin
-
+    p,g = p_input, g_input
+    
     # Load pretrained weights
     vgg_model = applications.VGG16(include_top=True, weights='imagenet')
 

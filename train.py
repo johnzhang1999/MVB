@@ -1,11 +1,12 @@
 from tensorflow.keras import losses, optimizers
 from tensorflow.keras.utils import plot_model
+from tensorflow.keras.utils import multi_gpu_model
 from baseline import baseline
 from dataset import MVBDataset
 import tensorflow as tf
 import time
 
-BATCH_SIZE = 16
+BATCH_SIZE = 32
 VAL_SIZE = 100
 
 # dataset
@@ -16,6 +17,13 @@ dataset_train = dataset_train.skip(VAL_SIZE)
 num_train -= VAL_SIZE
 dataset_test,num_test = MVBDataset(mode='test', preview=False, shuffle=True, batch_size=BATCH_SIZE)
 print('SIZES:',num_train,VAL_SIZE,num_test)
+
+# min dataset
+num_train = 3000
+dataset_train = dataset_train.take(num_train)
+dataset_val = dataset_train.skip(num_train).take(VAL_SIZE)
+num_test = 300
+dataset_test = dataset_train.skip(num_train).skip(VAL_SIZE).take(num_test)
 
 steps_per_epoch = num_train//BATCH_SIZE
 
@@ -46,6 +54,7 @@ steps_per_epoch = num_train//BATCH_SIZE
 # model
 
 model = baseline()
+model = multi_gpu_model(model, gpus=2)
 model.compile(loss=losses.binary_crossentropy, 
                 optimizer=optimizers.Adam(lr=0.001), 
                 metrics=['accuracy'])
