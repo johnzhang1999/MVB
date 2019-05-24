@@ -10,12 +10,12 @@ AUTOTUNE = tf.data.experimental.AUTOTUNE
 
 class Dataset(object):
 
-  def __init__(self, generator=Generator(mode='train'), preview=True, 
+  def __init__(self, generator=Generator(mode='train'), preview=False, 
                   prefetch=True, batch_size=32):
     self.preview = preview
     self.prefetch = prefetch
     self.batch_size = batch_size
-    self.next_element = self.MVBDataset(generator)
+    self.data,self.img_count = self.MVBDataset(generator)
 
   def _preprocess_image(self, image):
     image = tf.image.decode_jpeg(image, channels=3)
@@ -94,21 +94,8 @@ class Dataset(object):
     # print(image_label_ds)
 
     # visual examinations
-    if self.preview: 
-      plt.figure(figsize=(8,8))
-      for n,((a,b),m) in enumerate(dataset.take(4)):
-        plt.subplot(4,2,2*n+1)
-        plt.imshow(a)
-        plt.grid(False)
-        plt.xticks([])
-        plt.yticks([])
-        plt.subplot(4,2,2*n+2)
-        plt.imshow(b)
-        plt.grid(False)
-        plt.xticks([])
-        plt.yticks([])
-        plt.xlabel(str(m.numpy()))
-      plt.show()
+    if self.preview: self.preview_dataset(dataset)
+      
     
     # ds = image_label_ds.cache()
     # ds = dataset
@@ -123,3 +110,20 @@ class Dataset(object):
       ds = ds.prefetch(buffer_size=AUTOTUNE)
 
     return ds,img_count
+
+  def preview_dataset(self, dataset, num=4, save=False, path='previews/ds.png'):
+    plt.figure(figsize=(8,2*num))
+    for n,((a,b),m) in enumerate(dataset.take(num)):
+      plt.subplot(4,2,2*n+1)
+      plt.imshow(a)
+      plt.grid(False)
+      plt.xticks([])
+      plt.yticks([])
+      plt.subplot(4,2,2*n+2)
+      plt.imshow(b)
+      plt.grid(False)
+      plt.xticks([])
+      plt.yticks([])
+      plt.xlabel(str(m.numpy()))
+    plt.show()
+    plt.savefig(path)

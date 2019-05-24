@@ -53,60 +53,60 @@ def baseline():
     # p,g = BlueUnit2(p),BlueUnit2(g)
     p,g = BlueUnit3(p),BlueUnit3(g)
 
-    # # Conv4
+    # Conv4
 
-    # conv1 = layers.Conv2D(32, kernel_size=(3,3), activation='relu')
-    # p_bn1 = layers.BatchNormalization()
-    # g_bn1 = layers.BatchNormalization()
+    conv1 = layers.Conv2D(32, kernel_size=(3,3), activation='relu')
+    p_bn1 = layers.BatchNormalization()
+    g_bn1 = layers.BatchNormalization()
 
-    # p,g = conv1(p),conv1(g)
-    # p,g = p_bn1(p),g_bn1(g)
+    p,g = conv1(p),conv1(g)
+    p,g = p_bn1(p),g_bn1(g)
 
-    # shared_green = [
-    #     layers.ReLU(),
-    #     layers.MaxPooling2D(pool_size=pool_size_1, strides=strides),
-    # ]
+    shared_green = [
+        layers.ReLU(),
+        layers.MaxPooling2D(pool_size=pool_size_1, strides=strides),
+    ]
 
-    # GreenUnit1 = tf.keras.Sequential(shared_green)
+    GreenUnit1 = tf.keras.Sequential(shared_green)
 
-    # p,g = GreenUnit1(p),GreenUnit1(g)
+    p,g = GreenUnit1(p),GreenUnit1(g)
 
-    # # SEBlock Begins here
-    # p_channel = K.int_shape(p)[-1]
-    # g_channel = K.int_shape(g)[-1]
-    # # assert p_channel == g_channel
-    # ratio = 16
+    # SEBlock Begins here
+    p_channel = K.int_shape(p)[-1]
+    g_channel = K.int_shape(g)[-1]
+    # assert p_channel == g_channel
+    ratio = 16
 
-    # shared_se = [
-    #     layers.GlobalAveragePooling2D(),
-    #     layers.Dense(p_channel // ratio, activation='relu'),
-    #     layers.Dense(p_channel, activation='sigmoid'),
-    # ]
+    shared_se = [
+        layers.GlobalAveragePooling2D(),
+        layers.Dense(p_channel // ratio, activation='relu'),
+        layers.Dense(p_channel, activation='sigmoid'),
+    ]
 
-    # SE1 = tf.keras.Sequential(shared_se)
-    # p_se = SE1(p)
-    # g_se = SE1(g)
-    # p = layers.Multiply()([p, p_se])
-    # g = layers.Multiply()([g, g_se])
+    SE1 = tf.keras.Sequential(shared_se)
+    p_se = SE1(p)
+    g_se = SE1(g)
+    p = layers.Multiply()([p, p_se])
+    g = layers.Multiply()([g, g_se])
 
-    # # Conv5
+    # Conv5
 
-    # conv2 = layers.Conv2D(32, kernel_size=kernel_size_1, strides=strides, activation='relu')
-    # p_bn2 = layers.BatchNormalization()
-    # g_bn2 = layers.BatchNormalization()
+    conv2 = layers.Conv2D(32, kernel_size=kernel_size_1, strides=strides, activation='relu')
+    p_bn2 = layers.BatchNormalization()
+    g_bn2 = layers.BatchNormalization()
 
-    # p,g = conv2(p),conv2(g)
-    # p,g = p_bn2(p),g_bn2(g)
+    p,g = conv2(p),conv2(g)
+    p,g = p_bn2(p),g_bn2(g)
 
-    # GreenUnit2 = tf.keras.Sequential(shared_green)
-    # p = GreenUnit2(p)
-    # g = GreenUnit2(g)
+    GreenUnit2 = tf.keras.Sequential(shared_green)
+    p = GreenUnit2(p)
+    g = GreenUnit2(g)
 
-    # SE2 = tf.keras.Sequential(shared_se)
-    # p_se = SE2(p)
-    # g_se = SE2(g)
-    # p = layers.Multiply()([p, p_se])
-    # g = layers.Multiply()([g, g_se])
+    SE2 = tf.keras.Sequential(shared_se)
+    p_se = SE2(p)
+    g_se = SE2(g)
+    p = layers.Multiply()([p, p_se])
+    g = layers.Multiply()([g, g_se])
 
     # Conv layers finished
 
