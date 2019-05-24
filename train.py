@@ -47,6 +47,7 @@ callbacks = [
                                   embeddings_freq=0, update_freq='batch'),
   tf.keras.callbacks.ModelCheckpoint(filepath, monitor='val_acc', 
                                         verbose=1, save_best_only=False, 
+                                        save_weights_only=True,
                                         mode='auto', period=1)
 ]
 
