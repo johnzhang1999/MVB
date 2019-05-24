@@ -34,7 +34,7 @@ class Dataset(object):
 
     # building a tf dataset
     dataset = tf.data.Dataset.from_generator(generator.get_next, 
-                output_types=((tf.string, tf.string),tf.int8))
+                output_types=((tf.string, tf.string),tf.float16))
 
     dataset = dataset.map(self._load_and_preprocess_image, num_parallel_calls=AUTOTUNE)
     print('shape: ', repr(dataset.output_shapes))

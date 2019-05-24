@@ -44,4 +44,4 @@ class Generator(object):
             p = random.choice(self.lib[probe]['probe'])
             g = random.choice(self.lib[gallery]['gallery'])
 
-            yield (p,g),int(same_bag)
+            yield (p,g),float(same_bag)
