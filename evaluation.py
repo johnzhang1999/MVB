@@ -23,31 +23,25 @@ model.compile(loss=losses.binary_crossentropy,
 def first(self,t):
     return t[0]
 
-lib = test_gen.lib
-p = list(lib.values())[0]['probe'][0]
-g = list(lib.values())[0]['gallery'][0]
-print(p,g)
-p,_ = test._load_and_preprocess_image(p,0)
-g,_ = test._load_and_preprocess_image(g,0)
-tensor = [p,g]
+# lib = test_gen.lib
+# p = list(lib.values())[0]['probe'][0]
+# g = list(lib.values())[0]['gallery'][0]
+# print(p,g)
+# p,_ = test._load_and_preprocess_image(p,0)
+# g,_ = test._load_and_preprocess_image(g,0)
+# tensor = [p,g]
 
-# def _preprocess_image(image):
-#     image = tf.image.decode_jpeg(image, channels=3)
-#     image = tf.image.resize_images(image, [256, 256])
-#     image /= 255.0  # normalize to [0,1] range
-#     return image
+dataset = dataset_test.map(first, num_parallel_calls=AUTOTUNE)
 
-# def _load_and_preprocess_image(t):
-#     paths=t[0]
-#     label=t[1]
-#     a = tf.read_file(paths[0])
-#     b = tf.read_file(paths[1])
-#     return ([_preprocess_image(a)],[_preprocess_image(b)])
-# iter = test_gen.get_next()
-# tensor = next(iter)
-# print(type(tensor))
-# tensor = _load_and_preprocess_image(tensor)
-# # print(tensor)
+iterator = dataset.make_one_shot_iterator()
+next_element = iterator.get_next()
 
-result = model.predict(tensor,batch_size=BATCH_SIZE,steps=1)
+for i in range(1):
+  print(next_element.numpy())
+
+
+
+
+1/0
+result = model.predict(test_set,batch_size=BATCH_SIZE,steps=1)
 print ('result###',result.numpy())
