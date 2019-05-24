@@ -45,9 +45,9 @@ callbacks = [
   # Write TensorBoard logs to `./logs` directory
   tf.keras.callbacks.TensorBoard(log_dir='/output', histogram_freq=0, 
                                   embeddings_freq=0, update_freq='batch'),
-  # tf.keras.callbacks.ModelCheckpoint(filepath, monitor='val_acc', 
-  #                                       verbose=1, save_best_only=False, 
-  #                                       mode='auto', period=1)
+  tf.keras.callbacks.ModelCheckpoint(filepath, monitor='val_acc', 
+                                        verbose=1, save_best_only=False, 
+                                        mode='auto', period=1)
 ]
 
 model.fit(dataset_train, epochs=100, steps_per_epoch=num_train//BATCH_SIZE, callbacks=callbacks,
