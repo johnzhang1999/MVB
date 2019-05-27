@@ -27,7 +27,7 @@ for id,ps_and_gs in lib.items():
 
 
 model = baseline()
-model.load_weights('../checkpoints/saved-model-41-0.81.hdf5')
+model.load_weights('../checkpoints/saved-model-04-0.90.hdf5')
 model.compile(loss=losses.binary_crossentropy, 
                 optimizer=optimizers.Adam(lr=0.0001), 
                 metrics=['accuracy'])
@@ -48,7 +48,7 @@ def load_and_process_img(paths):
 
 correct = 0.0
 total = 20
-n = 100
+n = 5
 
 for i in range(total):
     id,p,pairs,ans = random.choice(test)

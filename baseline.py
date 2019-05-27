@@ -118,9 +118,8 @@ def baseline():
 
     # Dense layers
     x = layers.Dense(64, activation='sigmoid')(x)
-    x = layers.Dense(16, activation='sigmoid')(x)
+    x = layers.Dense(64, activation='sigmoid')(x)
     output = layers.Dense(2, activation='softmax')(x)
-    # neg = layers.Dense(1, activation='softmax')(x)
 
     # Model
     model = models.Model([p_input,g_input],output)

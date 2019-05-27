@@ -31,6 +31,7 @@ num_test = test.img_count
 
 model = baseline()
 # model = multi_gpu_model(model, gpus=2)
+model.load_weights('../checkpoints/saved-model-76-0.89.hdf5')
 model.compile(loss=losses.binary_crossentropy, 
                 optimizer=optimizers.Adam(lr=0.0001), 
                 metrics=['accuracy'])
@@ -41,17 +42,17 @@ filepath = '../checkpoints/saved-model-{epoch:02d}-{val_acc:.2f}.hdf5'
 
 callbacks = [
   # Interrupt training if `val_loss` stops improving for over 2 epochs
-  tf.keras.callbacks.EarlyStopping(patience=10, monitor='val_loss'),
+  tf.keras.callbacks.EarlyStopping(patience=50, monitor='val_loss'),
   # Write TensorBoard logs to `./logs` directory
-  tf.keras.callbacks.TensorBoard(log_dir='/output', histogram_freq=0, 
+  tf.keras.callbacks.TensorBoard(log_dir='/output/run2', histogram_freq=0, 
                                   embeddings_freq=0, update_freq='batch'),
   tf.keras.callbacks.ModelCheckpoint(filepath, monitor='val_acc', 
-                                        verbose=1, save_best_only=False, 
+                                        verbose=1, save_best_only=True, 
                                         save_weights_only=True,
                                         mode='auto', period=1)
 ]
 
-model.fit(dataset_train, epochs=100, steps_per_epoch=num_train//BATCH_SIZE, callbacks=callbacks,
+model.fit(dataset_train, epochs=200, steps_per_epoch=num_train//BATCH_SIZE, callbacks=callbacks,
             validation_data=dataset_val, validation_steps=VAL_SIZE//BATCH_SIZE)
  
 # EVALUATION
