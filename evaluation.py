@@ -12,10 +12,7 @@ AUTOTUNE = tf.data.experimental.AUTOTUNE
 BATCH_SIZE = 128
 
 test_gen = Generator(mode='test')
-# test = Dataset(test_gen,batch_size=BATCH_SIZE)
 lib = test_gen.lib
-# dataset_test = test.data
-# num_test = test.img_count
 
 test = []
 
@@ -35,33 +32,6 @@ model.compile(loss=losses.binary_crossentropy,
                 optimizer=optimizers.Adam(lr=0.0001), 
                 metrics=['accuracy'])
 
-# def first(pair,l):
-#     return pair
-
-# playing around
-
-# dataset = dataset_test
-# print('###############')
-# print('shape: ', repr(dataset.output_shapes))
-# print('type: ', dataset.output_types)
-# print()
-# print(dataset)
-# print('###############')
-# dataset = dataset_test.map(first, num_parallel_calls=AUTOTUNE)
-# print('shape: ', repr(dataset.output_shapes))
-# print('type: ', dataset.output_types)
-# print()
-# print(dataset)
-# print('###############')
-# iterator = dataset.make_one_shot_iterator()
-# next_element = iterator.get_next()
-# print(next_element)
-# result = model.predict(next_element,steps=1,verbose=1)
-# print ('result1###',result)
-# next_element = iterator.get_next()
-# result = model.predict(next_element,steps=1,verbose=1)
-# print ('result2###',result)
-
 # procedure: for every img, test all pairs, find the k img(s) with highest scores, see if it's in answers
 
 def preprocess_image(image):
@@ -80,14 +50,6 @@ correct = 0.0
 total = 20
 n = 100
 
-class MiniGenerator(object):
-    def __init__(self,list):
-        self.list = list
-    def get_next(self):
-        for elem in self.list:
-            yield elem
-
-
 for i in range(total):
     id,p,pairs,ans = random.choice(test)
     pairs_list = pairs
@@ -95,16 +57,13 @@ for i in range(total):
     second = [pair[1] for pair in pairs]
     pairs = tf.data.Dataset.from_tensor_slices({'img_a':first,'img_b':second})
 
-    # gen = MiniGenerator(pairs)
-    # pairs = tf.data.Dataset.from_generator(gen.get_next,output_types=tf.string)
-
     pairs = pairs.map(load_and_process_img, num_parallel_calls=AUTOTUNE)
     pairs = pairs.batch(BATCH_SIZE).prefetch(AUTOTUNE)
 
     # iterator = pairs.make_one_shot_iterator()
     # print('iterator finished')
     # print(iterator.get_next())
-    # 1/0
+
     predictions = model.predict(pairs,steps=len(pairs_list)//BATCH_SIZE,verbose=1)
     print('###LEN###:',len(predictions))
     similarity_scores = predictions[:,0]
