@@ -11,8 +11,8 @@ def baseline():
     input_shape = (DIMEN,DIMEN,3)
 
     # Input layers
-    p_input = layers.Input(shape=input_shape)
-    g_input = layers.Input(shape=input_shape)
+    p_input = layers.Input(shape=input_shape,name='img_a')
+    g_input = layers.Input(shape=input_shape,name='img_b')
 
     # Conv layers begin
     p,g = p_input, g_input
