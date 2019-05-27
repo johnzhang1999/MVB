@@ -7,6 +7,7 @@ import pathlib
 tf.enable_eager_execution()
 AUTOTUNE = tf.data.experimental.AUTOTUNE
 
+
 class Generator(object):
     def __init__(self,mode='train',path='../data/MVB_0505'):
         self.lib = self.generate_lib(path,mode)
@@ -38,10 +39,12 @@ class Generator(object):
             same_bag = random.random() > 0.5
             if same_bag:
                 gallery = probe
+                vec = [1.0,0.0]
             else:
                 gallery = random.choice(lib)
+                vec = [0.0,1.0]
             
             p = random.choice(self.lib[probe]['probe'])
             g = random.choice(self.lib[gallery]['gallery'])
 
-            yield (p,g),float(same_bag)
+            yield (p,g),vec

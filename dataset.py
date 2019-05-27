@@ -8,6 +8,7 @@ from generator import Generator
 tf.enable_eager_execution()
 AUTOTUNE = tf.data.experimental.AUTOTUNE
 
+
 class Dataset(object):
 
   def __init__(self, generator=Generator(mode='train'), preview=False, 
