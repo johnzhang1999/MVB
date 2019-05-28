@@ -57,8 +57,9 @@ def load_and_process_img(paths):
 
 
 # params
-total = 10 # total num of test cases
+total = 20 # total num of test cases
 n = 3 # rank-n
+rank_n = n
 ave_top_n = 3 # average top ave_top_n of gallery scores
 
 correct = 0.0
@@ -160,6 +161,6 @@ for n,(truth,pred) in enumerate(list(incorrect_preds.items())):
   plt.xticks([])
   plt.yticks([])
   plt.xlabel('{}\n{}'.format(pred[0],pred[1]))
-path = 'predictions-t{}-r{}-a{}.png'.format(str(time.time()),str(n),str(acc))
+path = 'predictions/predictions-t{}-r{}-a{}.png'.format(str(time.time()),str(rank_n),str(acc))
 plt.savefig(path)
 print('plot saved.')
