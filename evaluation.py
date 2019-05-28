@@ -2,6 +2,8 @@ import tensorflow as tf
 import numpy as np
 import random
 import time
+import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
 from tensorflow.keras import losses, optimizers
 from baseline import baseline
 from dataset import Dataset
@@ -55,11 +57,13 @@ def load_and_process_img(paths):
 
 
 # params
-total = 1 # total num of test cases
-n = 10 # rank-n
-ave_top_n = 2 # average top ave_top_n of gallery scores
+total = 10 # total num of test cases
+n = 3 # rank-n
+ave_top_n = 3 # average top ave_top_n of gallery scores
 
 correct = 0.0
+correct_preds = [] # correct
+incorrect_preds = {} # incorrect
 for i in range(total):
   id_truth,p,pairs = random.choice(test)
   pairs_list = pairs
@@ -106,8 +110,11 @@ for i in range(total):
     correct += 1
     idx = np.where(top_n_matches==id_truth)[0][0]+1
     print('Yes! Truth is ranked:', idx)
+    assert list(top_n_matches_and_scores.items())[idx-1][0] == id_truth
+    correct_preds.append(list(top_n_matches_and_scores.items())[idx-1])
   else: 
     print('No :(')
+    incorrect_preds[id_truth] = list(top_n_matches_and_scores.items())[0]
   print('answer:',id_truth)
   print('current score ({}/{} test): {}'.format(i+1,total,correct/(i+1)))
 acc = correct/total
@@ -122,3 +129,37 @@ with open('evals.log', 'a') as f:
   f.write('Using top: {}\n'.format(ave_top_n))
   f.write('Hitting rank: {}\n'.format(n))
   f.write('Accuracy: {}\n\n'.format(acc))
+
+# plotting correct predicts
+correct = int(correct)
+plt.figure(figsize=(5,5*total))
+plt.title('Predictions')
+for n,(img_id,score) in enumerate(correct_preds):
+  plt.subplot(total,1,n+1)
+  img = mpimg.imread(random.choice(lib[img_id]['probe']))
+  plt.imshow(img)
+  plt.grid(False)
+  plt.xticks([])
+  plt.yticks([])
+  plt.xlabel('{}\n{}'.format(img_id,score))
+
+# plotting incorrect predicts
+incorrect = len(list(incorrect_preds.keys()))
+for n,(truth,pred) in enumerate(list(incorrect_preds.items())):
+  plt.subplot(total,2,2*correct+2*n+1)
+  img = mpimg.imread(random.choice(lib[truth]['probe']))
+  plt.imshow(img)
+  plt.grid(False)
+  plt.xticks([])
+  plt.yticks([])
+  plt.xlabel(truth)
+  plt.subplot(total,2,2*correct+2*n+2)
+  img = mpimg.imread(random.choice(lib[pred[0]]['probe']))
+  plt.imshow(img)
+  plt.grid(False)
+  plt.xticks([])
+  plt.yticks([])
+  plt.xlabel('{}\n{}'.format(pred[0],pred[1]))
+path = 'predictions-t{}-r{}-a{}.png'.format(str(time.time()),str(n),str(acc))
+plt.savefig(path)
+print('plot saved.')
