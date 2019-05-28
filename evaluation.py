@@ -1,6 +1,7 @@
 import tensorflow as tf
 import numpy as np
 import random
+import time
 from tensorflow.keras import losses, optimizers
 from baseline import baseline
 from dataset import Dataset
@@ -28,8 +29,8 @@ for id,ps_and_gs in lib.items():
     for inner_id,inner_ps_and_gs in lib.items():
       for g in inner_ps_and_gs['gallery']:
         pairs.append((p,g))
-    answers = ps_and_gs['gallery']
-    test.append((id,p,pairs,answers))
+    # answers = ps_and_gs['gallery']
+    test.append((id,p,pairs))
 
 
 model = baseline()
@@ -54,13 +55,13 @@ def load_and_process_img(paths):
 
 
 # params
-total = 20 # total num of test cases
+total = 1 # total num of test cases
 n = 10 # rank-n
 ave_top_n = 2 # average top ave_top_n of gallery scores
 
 correct = 0.0
 for i in range(total):
-  id_truth,p,pairs,_ = random.choice(test)
+  id_truth,p,pairs = random.choice(test)
   pairs_list = pairs
   print('###Number of pairs:',len(pairs_list))
   first = [pair[0] for pair in pairs]
@@ -109,5 +110,15 @@ for i in range(total):
     print('No :(')
   print('answer:',id_truth)
   print('current score ({}/{} test): {}'.format(i+1,total,correct/(i+1)))
+acc = correct/total
+print('###final accuracy###:',acc)
 
-print('###final accuracy###:',correct/total)
+# logging
+with open('evals.log', 'a') as f:
+  localtime = time.asctime(time.localtime(time.time()))
+  f.write('Run at: {}\n'.format(localtime))
+  f.write('Using model: {}\n'.format(weights_path))
+  f.write('Tests #: {}\n'.format(total))
+  f.write('Using top: {}\n'.format(ave_top_n))
+  f.write('Hitting rank: {}\n'.format(n))
+  f.write('Accuracy: {}\n\n'.format(acc))

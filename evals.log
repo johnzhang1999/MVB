@@ -1,0 +1,7 @@
+Run at: Tue May 28 03:16:55 2019
+Using model: ../checkpoints/saved-model-04-0.90.hdf5
+Tests #: 1
+Using top: 2
+Hitting rank: 10
+Accuracy: 1.0
+
