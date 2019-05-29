@@ -18,16 +18,19 @@ class Dataset(object):
     self.batch_size = batch_size
     self.data,self.img_count = self.MVBDataset(generator)
 
-  def _preprocess_image(self, image):
-    image = tf.image.decode_jpeg(image, channels=3)
-    image = tf.image.resize_images(image, [256, 256])
-    image /= 255.0  # normalize to [0,1] range
-    return image
+  # def _preprocess_image(self, image):
+  #   # image = tf.image.decode_jpeg(image, channels=3)
+  #   print('###',type(image))
+  #   image = plt.imread(image.numpy())
+  #   image = tf.image.resize_images(image, [256, 256])
+  #   image /= 255.0 # normalize to [0,1] range
+  #   return image
 
-  def _load_and_preprocess_image(self,paths,label):
-    a = tf.read_file(paths[0])
-    b = tf.read_file(paths[1])
-    return (self._preprocess_image(a),self._preprocess_image(b)),label
+  # def _load_and_preprocess_image(self,paths,label):
+  #   # a = tf.read_file(paths[0])
+  #   # b = tf.read_file(paths[1])
+  #   a,b = paths[0],paths[1]
+  #   return (self._preprocess_image(a),self._preprocess_image(b)),label
 
   def MVBDataset(self, generator: Generator):
     lib = generator.lib
@@ -37,7 +40,7 @@ class Dataset(object):
     dataset = tf.data.Dataset.from_generator(generator.get_next, 
                 output_types=((tf.string, tf.string),tf.float16))
 
-    dataset = dataset.map(self._load_and_preprocess_image, num_parallel_calls=AUTOTUNE)
+    # dataset = dataset.map(self._load_and_preprocess_image, num_parallel_calls=AUTOTUNE)
     print('shape: ', repr(dataset.output_shapes))
     print('type: ', dataset.output_types)
     print()

@@ -6,6 +6,10 @@ from dataset import Dataset
 from generator import Generator
 import tensorflow as tf
 import time
+import os
+
+tf.enable_eager_execution()
+
 
 BATCH_SIZE = 32
 VAL_SIZE = 500
@@ -31,7 +35,7 @@ num_test = test.img_count
 
 model = baseline()
 # model = multi_gpu_model(model, gpus=2)
-model.load_weights('../checkpoints/saved-model-76-0.89.hdf5')
+# model.load_weights('../checkpoints/saved-model-76-0.89.hdf5')
 model.compile(loss=losses.binary_crossentropy, 
         optimizer=optimizers.Adam(lr=0.0001), 
         metrics=['accuracy'])
@@ -39,6 +43,8 @@ print(model.summary())
 # plot_model(model, to_file='model.png', show_shapes=True, show_layer_names=True)  
 
 filepath = '../checkpoints/saved-model-{epoch:02d}-{val_acc:.2f}.hdf5'
+if not os.path.exists('../checkpoints'):
+  os.makedirs('../checkpoints')
 
 callbacks = [
   # Interrupt training if `val_loss` stops improving for over 2 epochs
