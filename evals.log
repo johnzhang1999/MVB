@@ -166,3 +166,10 @@ Using top: 3
 Hitting rank: 3
 Accuracy: 0.0
 
+Run at: Thu May 30 06:49:41 2019
+Using model: ../checkpoints/saved-model-61-0.92.hdf5
+Tests #: 20
+Using top: 3
+Hitting rank: 3
+Accuracy: 0.2
+

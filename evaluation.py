@@ -36,7 +36,7 @@ for id,ps_and_gs in lib.items():
 
 
 model = baseline()
-weights_path = '../checkpoints/saved-model-04-0.90.hdf5'
+weights_path = '../checkpoints/saved-model-61-0.92.hdf5'
 model.load_weights(weights_path)
 model.compile(loss=losses.binary_crossentropy, 
         optimizer=optimizers.Adam(lr=0.0001), 
