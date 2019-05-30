@@ -53,7 +53,7 @@ class Generator(object):
   def get_next(self):
     lib = list(self.lib.keys())
     # print('len:',len(lib))
-    
+
     while True:
       probe = random.choice(lib)
       same_bag = random.random() > 0.5
@@ -68,5 +68,6 @@ class Generator(object):
       g = random.choice(self.lib[gallery]['gallery'])
 
       # p,g = self._preprocess_image(p),self._preprocess_image(g)
+      # print(p,g,vec)
 
       yield (p,g),vec
