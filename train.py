@@ -2,6 +2,7 @@ from tensorflow.keras import losses, optimizers
 from tensorflow.keras.utils import plot_model
 from tensorflow.keras.utils import multi_gpu_model
 from baseline import baseline
+from ft_resnet import ft_resnet
 from dataset import Dataset
 from generator import Generator
 import tensorflow as tf
@@ -35,9 +36,9 @@ num_test = test.train_count
 
 # model
 
-model = baseline()
+model = ft_resnet()
 # model = multi_gpu_model(model, gpus=2)
-model.load_weights('../checkpoints/saved-model-151-0.91.hdf5')
+# model.load_weights('../checkpoints/saved-model-151-0.91.hdf5')
 model.compile(loss=losses.binary_crossentropy, 
         optimizer=optimizers.Adam(lr=0.0001), 
         metrics=['accuracy'])
@@ -52,7 +53,7 @@ callbacks = [
   # Interrupt training if `val_loss` stops improving for over 2 epochs
   tf.keras.callbacks.EarlyStopping(patience=50, monitor='val_loss'),
   # Write TensorBoard logs to `./logs` directory
-  tf.keras.callbacks.TensorBoard(log_dir='/output/run6', histogram_freq=0, 
+  tf.keras.callbacks.TensorBoard(log_dir='/output/resnet5-none-weights', histogram_freq=0, 
                   embeddings_freq=0, update_freq='batch'),
   tf.keras.callbacks.ModelCheckpoint(filepath, monitor='val_acc', 
                     verbose=1, save_best_only=True, 

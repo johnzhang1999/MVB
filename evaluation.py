@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 from tensorflow.keras import losses, optimizers
 from baseline import baseline
+from ft_resnet import ft_resnet
 from dataset import Dataset
 from generator import Generator
 
@@ -35,7 +36,7 @@ for id,ps_and_gs in lib.items():
     test.append((id,p,pairs))
 
 
-model = baseline()
+model = ft_resnet()
 weights_path = '../checkpoints/saved-model-61-0.92.hdf5'
 model.load_weights(weights_path)
 model.compile(loss=losses.binary_crossentropy, 
